@@ -50,32 +50,30 @@ public class Runner {
 
     private static void performActionByUserChoice(int inputChoice) {
         switch (inputChoice) {
-            case 1:
-                printStudentData(DBConnectionUtility.getAllStudentsData());
-                break;
-            case 2:
+            case 1 -> printStudentData(DBConnectionUtility.getAllStudentsData());
+            case 2 -> {
                 logger.info("Please Provide Values for Fields You Want to Use as Filter");
                 getStudentSearchData(true);
                 printStudentData(DBConnectionUtility.searchStudents(student));
-                break;
-            case 3:
-                // edit student details
-                break;
-            case 4:
+            }
+            case 3 -> {
+                logger.info("Please Provide Existing Values For Fields You Don't Want to Change");
+                getStudentSearchData(false);
+                DBConnectionUtility.updateStudentRecord(student);
+            }
+            case 4 -> {
                 getStudentInsertionData(false);
                 if (DBConnectionUtility.insertNewStudentIntoDB(student)) printStudentData(student);
-                break;
-            case 5:
-                DBConnectionUtility.deleteStudentRecordById(getStudentId(false));
-                break;
-            case 0:
+            }
+            case 5 -> DBConnectionUtility.deleteStudentRecordById(getStudentId(false));
+            case 0 -> {
                 logger.info("Good Bye!");
                 DBConnectionUtility.closeDBConnection();
-                break;
-            default:
-                logger.info("Invalid Input - "+inputChoice);
+            }
+            default -> {
+                logger.info("Invalid Input - " + inputChoice);
                 logger.info("Please Provide Valid Input");
-                break;
+            }
         }
     }
 

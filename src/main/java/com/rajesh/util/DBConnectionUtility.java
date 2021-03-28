@@ -168,6 +168,34 @@ public class DBConnectionUtility {
         return studentList;
     }
 
+    public static void updateStudentRecord(Student student) {
+        boolean isRecordAvailable = false;
+        List<Student> studentList = getAllStudentsData();
+        for (Student eachStudent : studentList) {
+            if (eachStudent.getId().equals(student.getId())) {
+                isRecordAvailable = true;
+                break;
+            }
+        }
+
+        if (isRecordAvailable) {
+            String query = String.format("update students set sFirstName='%s',sLastName='%s',sAge='%s',sSex='%s' where sId='%s';",
+                    student.getsFirstName(), student.getsLastName(), student.getsAge(), student.getsSex(), student.getId());
+
+            try (Statement statement = connection.createStatement()) {
+                logger.info("Attempting to Update Record Having ID - " + student.getId());
+                statement.executeUpdate(query);
+                logger.info("SUCCESS Updating Record Having ID - " + student.getId());
+            } catch (SQLException exception) {
+                logger.error("ERROR Updating Record Having ID - " + student.getId());
+                exception.printStackTrace();
+            }
+        }
+        else {
+            logger.error("ERROR: No Record Found With ID - "+student.getId());
+        }
+    }
+
     private static int getDataCountFromStudentTable() {
         return getAllStudentsData().size();
     }
