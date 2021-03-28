@@ -74,24 +74,6 @@ public class DBConnectionUtility {
         }
     }
 
-    private static void createStudentsTable() {
-        try (Statement statement = connection.createStatement()) {
-            logger.info("Creating Table - "+table);
-            String query = String.format("create table %s (" +
-                    "sId int(100) primary key auto_increment," +
-                    "sFirstName varchar(255) not null," +
-                    "sLastName varchar(255) not null," +
-                    "sAge int(3) not null," +
-                    "sSex varchar(1) not null);", table);
-            statement.executeUpdate(query);
-            logger.info("SUCCESS Table Created - "+table);
-        }
-        catch (SQLException exception) {
-            logger.error("ERROR Creating Table - "+table);
-            exception.printStackTrace();
-        }
-    }
-
     public static boolean insertNewStudentIntoDB(Student student) {
         String query = "insert into students(sFirstName, sLastName, sAge, sSex) values (?,?,?,?);";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -132,5 +114,48 @@ public class DBConnectionUtility {
             exception.printStackTrace();
         }
         return studentList;
+    }
+
+    public static boolean deleteStudentRecordById(int studentId) {
+        int initialCount = getDataCountFromStudentTable();
+        String query = "delete from students where sId="+studentId;
+        try (Statement statement = connection.createStatement()) {
+            logger.info("Attempting to Delete Student Record With ID - "+studentId);
+            statement.executeUpdate(query);
+            int currentCount = getDataCountFromStudentTable();
+            if (currentCount < initialCount) {
+                logger.info("SUCCESS Deleted Student Record With ID - "+studentId);
+                return true;
+            }
+            else {
+                logger.info("FAILED to Delete Student Record With ID - "+studentId);
+                return false;
+            }
+        } catch (SQLException exception) {
+            logger.info("ERROR Deleting Student Record With ID - "+studentId);
+            return false;
+        }
+    }
+
+    private static int getDataCountFromStudentTable() {
+        return getAllStudentsData().size();
+    }
+
+    private static void createStudentsTable() {
+        try (Statement statement = connection.createStatement()) {
+            logger.info("Creating Table - "+table);
+            String query = String.format("create table %s (" +
+                    "sId int(100) primary key auto_increment," +
+                    "sFirstName varchar(255) not null," +
+                    "sLastName varchar(255) not null," +
+                    "sAge int(3) not null," +
+                    "sSex varchar(1) not null);", table);
+            statement.executeUpdate(query);
+            logger.info("SUCCESS Table Created - "+table);
+        }
+        catch (SQLException exception) {
+            logger.error("ERROR Creating Table - "+table);
+            exception.printStackTrace();
+        }
     }
 }

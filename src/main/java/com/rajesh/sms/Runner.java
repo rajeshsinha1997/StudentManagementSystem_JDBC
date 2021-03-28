@@ -30,8 +30,9 @@ public class Runner {
         while (inputChoice != 0) {
             logger.info("1. View Student List");
             logger.info("2. Search For Student");
-            logger.info("3. Edit A Student's Details");
+            logger.info("3. Edit a Student's Details");
             logger.info("4. Insert New Student's Details");
+            logger.info("5. Delete a Student");
             logger.info("0. Exit");
             logger.info("Enter Your Input Below:");
             try {
@@ -62,6 +63,9 @@ public class Runner {
                 getStudentInsertionData();
                 if (DBConnectionUtility.insertNewStudentIntoDB(student)) printStudentData(student);
                 break;
+            case 5:
+                DBConnectionUtility.deleteStudentRecordById(getStudentId());
+                break;
             case 0:
                 logger.info("Good Bye!");
                 DBConnectionUtility.closeDBConnection();
@@ -79,6 +83,24 @@ public class Runner {
         student.setsLastName(getStudentLastName());
         student.setsAge(getStudentAge());
         student.setsSex(getStudentSex());
+    }
+
+    private static int getStudentId() {
+        logger.info(DIVIDER);
+        logger.info("Enter Student ID: ");
+        String id = "-1";
+        try {
+            id = scanner.readLine();
+            return Integer.parseInt(id);
+        }
+        catch (NumberFormatException exception) {
+            logger.error("ERROR: Invalid Student ID - "+id);
+            return getStudentId();
+        }
+        catch (IOException exception) {
+            logger.error("ERROR: Reading Student ID");
+            return getStudentId();
+        }
     }
 
     private static String getStudentFirstName() {
@@ -114,7 +136,7 @@ public class Runner {
     private static int getStudentAge() {
         logger.info(DIVIDER);
         logger.info("Enter Student Age: ");
-        String age = "0";
+        String age = "-1";
         try {
             age = scanner.readLine();
             return Integer.parseInt(age);
