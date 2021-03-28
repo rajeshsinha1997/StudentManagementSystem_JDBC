@@ -1,5 +1,6 @@
 package com.rajesh.util;
 
+import com.rajesh.models.Student;
 import org.apache.log4j.Logger;
 
 import java.sql.*;
@@ -41,6 +42,17 @@ public class DBConnectionUtility {
         }
     }
 
+    public static void closeDBConnection() {
+        try {
+            logger.info("Closing Connection with DB - "+db);
+            connection.close();
+            logger.info("Closed Connection with DB - "+db+" : "+connection.isClosed());
+        } catch (SQLException exception) {
+            logger.error("ERROR Closing Connection with DB - "+db);
+            exception.printStackTrace();
+        }
+    }
+
     public static void checkTableAvailability() {
         try {
             logger.info("Checking Table Existence - "+table);
@@ -76,5 +88,31 @@ public class DBConnectionUtility {
             logger.error("ERROR Creating Table - "+table);
             exception.printStackTrace();
         }
+    }
+
+    public static void insertNewStudentIntoDB(Student student) {
+        String query = "insert into students(sFirstName, sLastName, sAge, sSex) values (?,?,?,?);";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, student.getsFirstName());
+            statement.setString(2, student.getsLastName());
+            statement.setInt(3, student.getsAge());
+            statement.setString(4, Character.toString(student.getsSex()));
+            logger.info("Inserting New Student Data in DB");
+            statement.executeUpdate();
+            logger.info("SUCCESS Inserting New Student Data in DB");
+            printStudentData(student);
+        } catch (SQLException exception) {
+            logger.error("ERROR Inserting New Student Data in DB");
+            exception.printStackTrace();
+        }
+    }
+
+    private static void printStudentData(Student student) {
+        logger.info("----------------------------------------");
+        logger.info("| First Name | "+ student.getsFirstName());
+        logger.info("| Last Name  | "+ student.getsLastName());
+        logger.info("| Age        | "+ student.getsAge());
+        logger.info("| Sex        | "+ student.getsSex());
+        logger.info("----------------------------------------");
     }
 }
