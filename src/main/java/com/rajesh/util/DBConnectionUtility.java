@@ -116,7 +116,7 @@ public class DBConnectionUtility {
         return studentList;
     }
 
-    public static boolean deleteStudentRecordById(String studentId) {
+    public static void deleteStudentRecordById(String studentId) {
         int initialCount = getDataCountFromStudentTable();
         String query = "delete from students where sId="+studentId;
         try (Statement statement = connection.createStatement()) {
@@ -125,15 +125,12 @@ public class DBConnectionUtility {
             int currentCount = getDataCountFromStudentTable();
             if (currentCount < initialCount) {
                 logger.info("SUCCESS Deleted Student Record With ID - "+studentId);
-                return true;
             }
             else {
                 logger.info("FAILED to Delete Student Record With ID - "+studentId);
-                return false;
             }
         } catch (SQLException exception) {
             logger.info("ERROR Deleting Student Record With ID - "+studentId);
-            return false;
         }
     }
 
