@@ -1,6 +1,7 @@
 package com.rajesh.models;
 
 public class Student {
+    private int id;
     private String sFirstName;
     private String sLastName;
     private int sAge;
@@ -8,6 +9,18 @@ public class Student {
 
     public Student() {
         // Default Constructor
+    }
+
+    public Student(int id, String sFirstName, String sLastName, int sAge, char sSex) {
+        this.id = id;
+        this.sFirstName = sFirstName;
+        this.sLastName = sLastName;
+        this.sAge = sAge;
+        this.sSex = sSex;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getsFirstName() {

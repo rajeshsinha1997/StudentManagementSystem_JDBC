@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 
 public class Runner {
 
@@ -49,7 +50,7 @@ public class Runner {
     private static void performActionByUserChoice(int inputChoice) {
         switch (inputChoice) {
             case 1:
-                // show student list
+                printStudentData(DBConnectionUtility.getAllStudentsData());
                 break;
             case 2:
                 // search for student
@@ -59,7 +60,7 @@ public class Runner {
                 break;
             case 4:
                 getStudentInsertionData();
-                DBConnectionUtility.insertNewStudentIntoDB(student);
+                if (DBConnectionUtility.insertNewStudentIntoDB(student)) printStudentData(student);
                 break;
             case 0:
                 logger.info("Good Bye!");
@@ -143,6 +144,22 @@ public class Runner {
         catch (IOException exception) {
             logger.error("ERROR: Reading Student Sex");
             return getStudentSex();
+        }
+    }
+
+    private static void printStudentData(Student student) {
+        logger.info("----------------------------------------");
+        logger.info("| ID         | "+ student.getId());
+        logger.info("| First Name | "+ student.getsFirstName());
+        logger.info("| Last Name  | "+ student.getsLastName());
+        logger.info("| Age        | "+ student.getsAge());
+        logger.info("| Sex        | "+ student.getsSex());
+        logger.info("----------------------------------------");
+    }
+
+    private static void printStudentData(List<Student> studentList) {
+        for (Student eachStudent : studentList) {
+            printStudentData(eachStudent);
         }
     }
 

@@ -4,6 +4,8 @@ import com.rajesh.models.Student;
 import org.apache.log4j.Logger;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DBConnectionUtility {
 
@@ -90,7 +92,7 @@ public class DBConnectionUtility {
         }
     }
 
-    public static void insertNewStudentIntoDB(Student student) {
+    public static boolean insertNewStudentIntoDB(Student student) {
         String query = "insert into students(sFirstName, sLastName, sAge, sSex) values (?,?,?,?);";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, student.getsFirstName());
@@ -100,19 +102,35 @@ public class DBConnectionUtility {
             logger.info("Inserting New Student Data in DB");
             statement.executeUpdate();
             logger.info("SUCCESS Inserting New Student Data in DB");
-            printStudentData(student);
+            return true;
         } catch (SQLException exception) {
             logger.error("ERROR Inserting New Student Data in DB");
             exception.printStackTrace();
+            return false;
         }
     }
 
-    private static void printStudentData(Student student) {
-        logger.info("----------------------------------------");
-        logger.info("| First Name | "+ student.getsFirstName());
-        logger.info("| Last Name  | "+ student.getsLastName());
-        logger.info("| Age        | "+ student.getsAge());
-        logger.info("| Sex        | "+ student.getsSex());
-        logger.info("----------------------------------------");
+    public static List<Student> getAllStudentsData() {
+        String query = "select * from students;";
+        List<Student> studentList = new ArrayList<>();
+        try (Statement statement = connection.createStatement()) {
+            logger.info("Fetching Data from Table - "+table);
+            ResultSet resultSet = statement.executeQuery(query);
+            logger.info("SUCCESS Fetching Data from DB - "+db+", Table - "+table);
+            int count = 0;
+            while (resultSet.next()) {
+                studentList.add(new Student(resultSet.getInt(1),
+                                            resultSet.getString(2),
+                                            resultSet.getString(3),
+                                            resultSet.getInt(4),
+                                            resultSet.getString(5).charAt(0)));
+                count++;
+            }
+            logger.info("Number of Rows Fetched - "+count);
+        } catch (SQLException exception) {
+            logger.info("ERROR Fetching Data from Table - "+table);
+            exception.printStackTrace();
+        }
+        return studentList;
     }
 }
