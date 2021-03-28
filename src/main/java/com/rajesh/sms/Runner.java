@@ -184,6 +184,10 @@ public class Runner {
                 return getStudentSex(canBeEmpty);
             }
         }
+        catch (StringIndexOutOfBoundsException exception) {
+            logger.error("ERROR: Please Provide Student Sex");
+            return getStudentSex(canBeEmpty);
+        }
         catch (IOException exception) {
             logger.error("ERROR: Reading Student Sex");
             return getStudentSex(canBeEmpty);
