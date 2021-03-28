@@ -1,17 +1,17 @@
 package com.rajesh.models;
 
 public class Student {
-    private int id;
+    private String id;
     private String sFirstName;
     private String sLastName;
-    private int sAge;
-    private char sSex;
+    private String sAge;
+    private String sSex;
 
     public Student() {
         // Default Constructor
     }
 
-    public Student(int id, String sFirstName, String sLastName, int sAge, char sSex) {
+    public Student(String id, String sFirstName, String sLastName, String sAge, String sSex) {
         this.id = id;
         this.sFirstName = sFirstName;
         this.sLastName = sLastName;
@@ -19,8 +19,12 @@ public class Student {
         this.sSex = sSex;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getsFirstName() {
@@ -39,19 +43,19 @@ public class Student {
         this.sLastName = sLastName;
     }
 
-    public int getsAge() {
+    public String getsAge() {
         return sAge;
     }
 
-    public void setsAge(int sAge) {
+    public void setsAge(String sAge) {
         this.sAge = sAge;
     }
 
-    public char getsSex() {
+    public String getsSex() {
         return sSex;
     }
 
-    public void setsSex(char sSex) {
+    public void setsSex(String sSex) {
         this.sSex = sSex;
     }
 }

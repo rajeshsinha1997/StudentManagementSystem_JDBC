@@ -79,8 +79,8 @@ public class DBConnectionUtility {
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, student.getsFirstName());
             statement.setString(2, student.getsLastName());
-            statement.setInt(3, student.getsAge());
-            statement.setString(4, Character.toString(student.getsSex()));
+            statement.setString(3, student.getsAge());
+            statement.setString(4, student.getsSex());
             logger.info("Inserting New Student Data in DB");
             statement.executeUpdate();
             logger.info("SUCCESS Inserting New Student Data in DB");
@@ -101,11 +101,11 @@ public class DBConnectionUtility {
             logger.info("SUCCESS Fetching Data from DB - "+db+", Table - "+table);
             int count = 0;
             while (resultSet.next()) {
-                studentList.add(new Student(resultSet.getInt(1),
+                studentList.add(new Student(resultSet.getString(1),
                                             resultSet.getString(2),
                                             resultSet.getString(3),
-                                            resultSet.getInt(4),
-                                            resultSet.getString(5).charAt(0)));
+                                            resultSet.getString(4),
+                                            resultSet.getString(5)));
                 count++;
             }
             logger.info("Number of Rows Fetched - "+count);
@@ -116,7 +116,7 @@ public class DBConnectionUtility {
         return studentList;
     }
 
-    public static boolean deleteStudentRecordById(int studentId) {
+    public static boolean deleteStudentRecordById(String studentId) {
         int initialCount = getDataCountFromStudentTable();
         String query = "delete from students where sId="+studentId;
         try (Statement statement = connection.createStatement()) {
@@ -135,6 +135,40 @@ public class DBConnectionUtility {
             logger.info("ERROR Deleting Student Record With ID - "+studentId);
             return false;
         }
+    }
+
+    public static List<Student> searchStudents(Student student) {
+        String sId = (student.getId().equals("")) ? "%" : student.getId();
+        String sFirstName = (student.getsFirstName().equals("")) ? "%" : student.getsFirstName();
+        String sLastName = (student.getsLastName().equals("")) ? "%" : student.getsLastName();
+        String sAge = (student.getsAge().equals("")) ? "%" : student.getsAge();
+        String sSex = (student.getsSex().equals("")) ? "%" : student.getsSex();
+
+        String query = String.format("select * from students where sId like '%s' and " +
+                "sFirstName like '%s' and sLastName like '%s' and sAge like '%s' and sSex like '%s'",
+                sId, sFirstName, sLastName, sAge, sSex);
+
+        List<Student> studentList = new ArrayList<>();
+        int count = 0;
+
+        try (Statement statement = connection.createStatement()) {
+            logger.info("Attempting to Fetch All Records Matching Filters");
+            ResultSet resultSet = statement.executeQuery(query);
+            logger.info("SUCCESS Fetching All Records Matching Filters");
+            while (resultSet.next()) {
+                studentList.add(new Student(resultSet.getString(1),
+                                            resultSet.getString(2),
+                                            resultSet.getString(3),
+                                            resultSet.getString(4),
+                                            resultSet.getString(5)));
+                count++;
+            }
+            logger.info("All Records Matching Filters Count - "+count);
+        } catch (SQLException exception) {
+            logger.error("ERROR Fetching All Records Matching Filters");
+            exception.printStackTrace();
+        }
+        return studentList;
     }
 
     private static int getDataCountFromStudentTable() {

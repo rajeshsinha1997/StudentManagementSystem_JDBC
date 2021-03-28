@@ -54,17 +54,19 @@ public class Runner {
                 printStudentData(DBConnectionUtility.getAllStudentsData());
                 break;
             case 2:
-                // search for student
+                logger.info("Please Provide Values for Fields You Want to Use as Filter");
+                getStudentSearchData(true);
+                printStudentData(DBConnectionUtility.searchStudents(student));
                 break;
             case 3:
                 // edit student details
                 break;
             case 4:
-                getStudentInsertionData();
+                getStudentInsertionData(false);
                 if (DBConnectionUtility.insertNewStudentIntoDB(student)) printStudentData(student);
                 break;
             case 5:
-                DBConnectionUtility.deleteStudentRecordById(getStudentId());
+                DBConnectionUtility.deleteStudentRecordById(getStudentId(false));
                 break;
             case 0:
                 logger.info("Good Bye!");
@@ -77,95 +79,118 @@ public class Runner {
         }
     }
 
-    private static void getStudentInsertionData() {
-        student = new Student();
-        student.setsFirstName(getStudentFirstName());
-        student.setsLastName(getStudentLastName());
-        student.setsAge(getStudentAge());
-        student.setsSex(getStudentSex());
+    private static void getStudentSearchData(boolean canBeEmpty) {
+        getStudentInsertionData(canBeEmpty);
+        student.setId(getStudentId(canBeEmpty));
     }
 
-    private static int getStudentId() {
+    private static void getStudentInsertionData(boolean canBeEmpty) {
+        student = new Student();
+        student.setsFirstName(getStudentFirstName(canBeEmpty));
+        student.setsLastName(getStudentLastName(canBeEmpty));
+        student.setsAge(getStudentAge(canBeEmpty));
+        student.setsSex(getStudentSex(canBeEmpty));
+    }
+
+    private static String getStudentId(boolean canBeEmpty) {
         logger.info(DIVIDER);
         logger.info("Enter Student ID: ");
-        String id = "-1";
+        String id = null;
         try {
-            id = scanner.readLine();
-            return Integer.parseInt(id);
+            id = scanner.readLine().trim();
+            if (id.equals("") && canBeEmpty) return id;
+            else return Integer.toString(Integer.parseInt(id));
         }
         catch (NumberFormatException exception) {
             logger.error("ERROR: Invalid Student ID - "+id);
-            return getStudentId();
+            return getStudentId(canBeEmpty);
         }
         catch (IOException exception) {
             logger.error("ERROR: Reading Student ID");
-            return getStudentId();
+            return getStudentId(canBeEmpty);
         }
     }
 
-    private static String getStudentFirstName() {
+    private static String getStudentFirstName(boolean canBeEmpty) {
         logger.info(DIVIDER);
         logger.info("Enter Student First Name: ");
         try {
-            String fName = scanner.readLine();
-            if (fName != null) return fName;
-            logger.error("ERROR: Invalid Student First Name - " + fName);
-            return getStudentFirstName();
-        }
-        catch (IOException exception) {
-            logger.error("ERROR: Reading Student First Name");
-            return getStudentFirstName();
-        }
-    }
-
-    private static String getStudentLastName() {
-        logger.info(DIVIDER);
-        logger.info("Enter Student Last Name: ");
-        try {
-            String lName = scanner.readLine();
-            if (lName != null) return lName;
-            logger.error("ERROR: Invalid Student Last Name - " + lName);
-            return getStudentLastName();
-        }
-        catch (IOException exception) {
-            logger.error("ERROR: Reading Student Last Name");
-            return getStudentLastName();
-        }
-    }
-
-    private static int getStudentAge() {
-        logger.info(DIVIDER);
-        logger.info("Enter Student Age: ");
-        String age = "-1";
-        try {
-            age = scanner.readLine();
-            return Integer.parseInt(age);
-        }
-        catch (NumberFormatException exception) {
-            logger.error("ERROR: Invalid Student Age - "+age);
-            return getStudentAge();
-        }
-        catch (IOException exception) {
-            logger.error("ERROR: Reading Student Age");
-            return getStudentAge();
-        }
-    }
-
-    private static char getStudentSex() {
-        logger.info(DIVIDER);
-        logger.info("Enter Student Sex (M/F): ");
-        try {
-            char sex = scanner.readLine().toLowerCase().charAt(0);
-            if (sex == 'm' || sex == 'f') {
-                return sex;
-            } else {
-                logger.error("ERROR: Invalid Student Sex");
-                return getStudentSex();
+            String fName = scanner.readLine().trim();
+            if (fName.equals("") && canBeEmpty) return fName;
+            else {
+                if (fName.equals("")) {
+                    logger.error("ERROR: Invalid Student First Name - " + fName);
+                    return getStudentFirstName(canBeEmpty);
+                }
+                else return fName;
             }
         }
         catch (IOException exception) {
+            logger.error("ERROR: Reading Student First Name");
+            return getStudentFirstName(canBeEmpty);
+        }
+    }
+
+    private static String getStudentLastName(boolean canBeEmpty) {
+        logger.info(DIVIDER);
+        logger.info("Enter Student Last Name: ");
+        try {
+            String lName = scanner.readLine().trim();
+            if (lName.equals("") && canBeEmpty) return lName;
+            else {
+                if (lName.equals("")) {
+                    logger.error("ERROR: Invalid Student Last Name - " + lName);
+                    return getStudentLastName(canBeEmpty);
+                }
+                else return lName;
+            }
+        }
+        catch (IOException exception) {
+            logger.error("ERROR: Reading Student Last Name");
+            return getStudentLastName(canBeEmpty);
+        }
+    }
+
+    private static String getStudentAge(boolean canBeEmpty) {
+        logger.info(DIVIDER);
+        logger.info("Enter Student Age: ");
+        String age = null;
+        try {
+            age = scanner.readLine().trim();
+            if (age.equals("") && canBeEmpty) return age;
+            else return Integer.toString(Integer.parseInt(age));
+        }
+        catch (NumberFormatException exception) {
+            logger.error("ERROR: Invalid Student Age - "+age);
+            return getStudentAge(canBeEmpty);
+        }
+        catch (IOException exception) {
+            logger.error("ERROR: Reading Student Age");
+            return getStudentAge(canBeEmpty);
+        }
+    }
+
+    private static String getStudentSex(boolean canBeEmpty) {
+        logger.info(DIVIDER);
+        logger.info("Enter Student Sex (M/F): ");
+        try {
+            String sx = scanner.readLine().trim();
+            if (sx.equals("") && canBeEmpty) return sx;
+            char sex = sx.toLowerCase().charAt(0);
+            if (sex == 'm' || sex == 'f') {
+                return Character.toString(sex);
+            } else {
+                logger.error("ERROR: Invalid Student Sex");
+                return getStudentSex(canBeEmpty);
+            }
+        }
+        catch (StringIndexOutOfBoundsException exception) {
+            logger.error("ERROR: Please Provide Student Sex");
+            return getStudentSex(canBeEmpty);
+        }
+        catch (IOException exception) {
             logger.error("ERROR: Reading Student Sex");
-            return getStudentSex();
+            return getStudentSex(canBeEmpty);
         }
     }
 
