@@ -137,6 +137,40 @@ public class DBConnectionUtility {
         }
     }
 
+    public static List<Student> searchStudents(Student student) {
+        String sId = (Integer.toString(student.getId())==null) ? "%" : Integer.toString(student.getId());
+        String sFirstName = (student.getsFirstName()==null) ? "%" : student.getsFirstName();
+        String sLastName = (student.getsLastName()==null) ? "%" : student.getsLastName();
+        String sAge = (Integer.toString(student.getsAge())==null) ? "%" : Integer.toString(student.getsAge());
+        String sSex = (Character.toString(student.getsSex())==null) ? "%" : Character.toString(student.getsSex());
+
+        String query = String.format("select * from students where sId like %s and " +
+                "sFirstName like %s and sLastName like %s and sAge like %s and sSex like %s",
+                sId, sFirstName, sLastName, sAge, sSex);
+
+        List<Student> studentList = new ArrayList<>();
+        int count = 0;
+
+        try (Statement statement = connection.createStatement()) {
+            logger.info("Attempting to Fetch All Records Matching Filters");
+            ResultSet resultSet = statement.executeQuery(query);
+            logger.info("SUCCESS Fetching All Records Matching Filters");
+            while (resultSet.next()) {
+                studentList.add(new Student(resultSet.getInt(1),
+                                            resultSet.getString(2),
+                                            resultSet.getString(3),
+                                            resultSet.getInt(4),
+                                            resultSet.getString(5).charAt(0)));
+                count++;
+            }
+            logger.info("All Records Matching Filters Count - "+count);
+        } catch (SQLException exception) {
+            logger.error("ERROR Fetching All Records Matching Filters");
+            exception.printStackTrace();
+        }
+        return studentList;
+    }
+
     private static int getDataCountFromStudentTable() {
         return getAllStudentsData().size();
     }
